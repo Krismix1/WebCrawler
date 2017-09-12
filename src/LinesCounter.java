@@ -19,7 +19,7 @@ public class LinesCounter {
     }
 
     public Map<String, Statistics> countLinesForSeason(String season) {
-        File[] files = new TextSearcher().findAllFilesAtPath(WebCrawler.SEASON_ONE_PATH);
+        File[] files = new TextSearcher().findAllFilesAtPath(WebCrawler.APPLICATION_PATH + File.separator + season);
         for (File file : files) {
             Map<String, Integer> results = countLinesForEpisode(generateScriptsFromFile(file));
         }

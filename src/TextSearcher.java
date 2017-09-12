@@ -27,7 +27,7 @@ public class TextSearcher {
     }
 
     public List<Pair<String, Integer>> searchForWordsInAllEpisodes(String words) {
-        File[] episodes = findAllFilesAtPath(WebCrawler.SEASON_ONE_PATH);
+        File[] episodes = findAllFilesAtPath(WebCrawler.APPLICATION_PATH + File.separator + "Season1");
 
         List<Pair<String, Integer>> occurrences = new LinkedList<>();
         for (File file : episodes) {
@@ -41,7 +41,7 @@ public class TextSearcher {
 
     public int searchForWordsInFile(String words, String episodeTitle) {
         try {
-            File file = new File(WebCrawler.SEASON_ONE_PATH + File.separator + episodeTitle);
+            File file = new File(WebCrawler.APPLICATION_PATH + File.separator + "Season1" + File.separator + episodeTitle);
             BufferedReader reader = new BufferedReader(new FileReader(file));
             List<String> lines = reader.lines().collect(Collectors.toList());
             Iterator<String> it = lines.iterator();

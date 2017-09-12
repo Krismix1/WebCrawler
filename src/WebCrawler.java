@@ -19,8 +19,8 @@ public class WebCrawler {
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
 
-    public static final String PATH_TO_SAVE = System.getProperty("user.dir");
-    public static final String SEASON_ONE_PATH = PATH_TO_SAVE + File.separator + "Season1";
+    public static final String APPLICATION_PATH = System.getProperty("user.dir");
+//    public static final String SEASON_ONE_PATH = APPLICATION_PATH + File.separator + "Season1";
 
 
     public String getScriptForEpisode(String url) {
@@ -51,16 +51,14 @@ public class WebCrawler {
         }
     }
 
-    public void saveEpisodeToTextFile(String title, String lyrics) {
-        saveEpisodeToFileOfFormat(title, lyrics, ".txt");
+    public void saveEpisodeToTextFile(String title, String lyrics, String pathToSave) {
+        saveEpisodeToFileOfFormat(title, lyrics, pathToSave, ".txt");
     }
 
-    public void saveEpisodeToFileOfFormat(String title, String lyrics, String fileFormat) {
+    public void saveEpisodeToFileOfFormat(String title, String lyrics, String pathToSave, String fileFormat) {
         try {
-            // FIXME: 04-Sep-17 Don't hardcode this!!!
-            (new File(SEASON_ONE_PATH)).mkdir();
-            File file = new File(SEASON_ONE_PATH + File.separator + title + fileFormat);
-            // !
+            (new File(pathToSave)).mkdir();
+            File file = new File(pathToSave + File.separator + title + fileFormat);
             BufferedWriter writer = new BufferedWriter(new PrintWriter(file));
             writer.write(title);
             writer.newLine();
@@ -73,18 +71,21 @@ public class WebCrawler {
         }
     }
 
-    public void saveEpisodeFromURL(String url) {
+    public void saveEpisodeFromURL(String url, String pathToSave) {
         String title = getTitleForEpisode(url);
-        System.out.println( ANSI_YELLOW + "Trying to save episode \"" + title + "\"" + ANSI_RESET);
+        System.out.println(ANSI_YELLOW + "Trying to save episode \"" + title + "\"" + ANSI_RESET);
         String lyrics = getScriptForEpisode(url);
-        saveEpisodeToTextFile(title, lyrics);
+        saveEpisodeToTextFile(title, lyrics, pathToSave);
     }
 
     public void saveLyricsForSeason(String seasonURL) {
         try {
+            final String SEASON = "Season";
+            char seasonNumber = seasonURL.charAt(seasonURL.indexOf(SEASON) + SEASON.length() + 1);
+            String path = APPLICATION_PATH +File.separator + SEASON + seasonNumber;
             Document doc = Jsoup.connect(seasonURL).get();
             Elements episodesURLS = doc.select("a[href].u-display_block");
-            episodesURLS.forEach(url -> saveEpisodeFromURL(url.attr("href")));
+            episodesURLS.forEach(url -> saveEpisodeFromURL(url.attr("href"), path));
         } catch (IOException e) {
             e.printStackTrace();
         }

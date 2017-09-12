@@ -6,7 +6,12 @@ import java.util.List;
  * Created by Chris on 02-Sep-17.
  */
 public class Main {
+
     public static void main(String[] args) {
+        test1();
+    }
+
+    public static void test1() {
         WebCrawler webCrawler = new WebCrawler();
         String url = "https://genius.com/albums/Game-of-thrones/Season-1-scripts";
 //        webCrawler.saveLyricsForSeason(url);
@@ -41,6 +46,6 @@ public class Main {
         scriptLines.add(new ScriptLine("Tywin Lannister2", "7"));
 
         LinesCounter linesCounter = new LinesCounter();
-        linesCounter.generateScriptsFromFile(new File(WebCrawler.SEASON_ONE_PATH + File.separator + "Baelor.txt"));
+        linesCounter.generateScriptsFromFile(new File(WebCrawler.APPLICATION_PATH +File.separator + "Season1" + File.separator + "Baelor.txt"));
     }
 }
