@@ -8,6 +8,7 @@ import org.jsoup.select.Elements;
 import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Chris on 03-Sep-17.
@@ -83,7 +84,8 @@ public class WebCrawler {
 
     /**
      * Gets the title and episode script from the given URL and saves it to the path + title + .txt
-     * @param url the URL of the episode
+     *
+     * @param url        the URL of the episode
      * @param pathToSave the directory in which to save. This directory should already exists
      */
     public void saveEpisodeFromURL(String url, String pathToSave) {
@@ -95,26 +97,38 @@ public class WebCrawler {
 
     /**
      * Saves the lyrics of all episodes in the season at the URL.
-     * It will create a directory under the application folder.
+     * It will create a directory under the application folder, if it doesn't exist.
+     *
      * @param seasonURL the URL of the season
      */
     // FIXME: 14-Sep-17 Maybe put the 'path' as a method parameter and let the client choose where to save?
     public void saveLyricsForSeason(String seasonURL) {
+        final String SEASON = "Season";
+        char seasonNumber = seasonURL.charAt(seasonURL.indexOf(SEASON) + SEASON.length() + 1);
+        String path = APPLICATION_PATH + File.separator + SEASON + seasonNumber;
+        (new File(path)).mkdir(); // FIXME: 14-Sep-17 Maybe put this line in saveEpisodeToFileOfFormat method?
+
+        List<String> episodesURLS = getEpisodesURLS(seasonURL);
+        episodesURLS.forEach(url -> saveEpisodeFromURL(url, path));
+    }
+
+    public List<String> getEpisodesURLS(String seasonURL) {
         try {
-            final String SEASON = "Season";
-            char seasonNumber = seasonURL.charAt(seasonURL.indexOf(SEASON) + SEASON.length() + 1);
-            String path = APPLICATION_PATH + File.separator + SEASON + seasonNumber;
-            (new File(path)).mkdir(); // FIXME: 14-Sep-17 Maybe put this line in saveEpisodeToFileOfFormat method?
             Document doc = Jsoup.connect(seasonURL).get();
             Elements episodesURLS = doc.select("a[href].u-display_block");
-            episodesURLS.forEach(url -> saveEpisodeFromURL(url.attr("href"), path));
+            return episodesURLS
+                    .stream()
+                    .map(element -> element.attr("href"))
+                    .collect(Collectors.toList());
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
     }
 
     /**
      * Gets the names of the characters from <a href="https://en.wikipedia.org/wiki/List_of_Game_of_Thrones_characters">wikipedia</a>.
+     *
      * @return list of the characters
      */
     public static List<String> getCharactersName() {
