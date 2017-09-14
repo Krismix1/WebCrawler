@@ -1,3 +1,5 @@
+package logic;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -22,17 +24,17 @@ public class WebCrawler {
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
 
+    /**
+     * The path of this application
+     */
     public static final String APPLICATION_PATH = System.getProperty("user.dir");
-//    public static final String SEASON_ONE_PATH = APPLICATION_PATH + File.separator + "Season1";
 
 
     public String getScriptForEpisode(String url) {
         try {
-//            long start = System.nanoTime();
             // TODO: 04-Sep-17 Try not to connect to the document to many times
             Document doc = Jsoup.connect(url).get();
             Elements elements = doc.select("p");
-//            System.out.println((System.nanoTime() - start) / 1000000.0);
             return elements.first().text();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -42,11 +44,9 @@ public class WebCrawler {
 
     public String getTitleForEpisode(String url) {
         try {
-//            long start = System.nanoTime();
             // TODO: 04-Sep-17 Try not to connect to the document to many times
             Document doc = Jsoup.connect(url).get();
             Elements title = doc.select(".header_with_cover_art-primary_info-title");
-//            System.out.println((System.nanoTime() - start) / 1000000.0);
             return title.text();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -58,9 +58,16 @@ public class WebCrawler {
         saveEpisodeToFileOfFormat(title, lyrics, pathToSave, ".txt");
     }
 
+    /**
+     * Saves the episode to a file of desired format.
+     *
+     * @param title      the title of the episode, which is written on the first line in the file and also used as the name of the file
+     * @param lyrics     the lyrics of the episode
+     * @param pathToSave the directory in which the episode will be saved. This directory should already exists.
+     * @param fileFormat the format of the file
+     */
     public void saveEpisodeToFileOfFormat(String title, String lyrics, String pathToSave, String fileFormat) {
         try {
-            (new File(pathToSave)).mkdir();
             File file = new File(pathToSave + File.separator + title + fileFormat);
             BufferedWriter writer = new BufferedWriter(new PrintWriter(file));
             writer.write(title);
@@ -74,6 +81,11 @@ public class WebCrawler {
         }
     }
 
+    /**
+     * Gets the title and episode script from the given URL and saves it to the path + title + .txt
+     * @param url the URL of the episode
+     * @param pathToSave the directory in which to save. This directory should already exists
+     */
     public void saveEpisodeFromURL(String url, String pathToSave) {
         String title = getTitleForEpisode(url);
         System.out.println(ANSI_YELLOW + "Trying to save episode \"" + title + "\"" + ANSI_RESET);
@@ -81,11 +93,18 @@ public class WebCrawler {
         saveEpisodeToTextFile(title, lyrics, pathToSave);
     }
 
+    /**
+     * Saves the lyrics of all episodes in the season at the URL.
+     * It will create a directory under the application folder.
+     * @param seasonURL the URL of the season
+     */
+    // FIXME: 14-Sep-17 Maybe put the 'path' as a method parameter and let the client choose where to save?
     public void saveLyricsForSeason(String seasonURL) {
         try {
             final String SEASON = "Season";
             char seasonNumber = seasonURL.charAt(seasonURL.indexOf(SEASON) + SEASON.length() + 1);
-            String path = APPLICATION_PATH +File.separator + SEASON + seasonNumber;
+            String path = APPLICATION_PATH + File.separator + SEASON + seasonNumber;
+            (new File(path)).mkdir(); // FIXME: 14-Sep-17 Maybe put this line in saveEpisodeToFileOfFormat method?
             Document doc = Jsoup.connect(seasonURL).get();
             Elements episodesURLS = doc.select("a[href].u-display_block");
             episodesURLS.forEach(url -> saveEpisodeFromURL(url.attr("href"), path));
@@ -94,7 +113,11 @@ public class WebCrawler {
         }
     }
 
-    public static List<String> getCharacterNames() {
+    /**
+     * Gets the names of the characters from <a href="https://en.wikipedia.org/wiki/List_of_Game_of_Thrones_characters">wikipedia</a>.
+     * @return list of the characters
+     */
+    public static List<String> getCharactersName() {
         try {
             List<String> characterNames = new LinkedList<>();
             Document doc = Jsoup.connect("https://en.wikipedia.org/wiki/List_of_Game_of_Thrones_characters").get();

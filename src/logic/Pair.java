@@ -1,3 +1,5 @@
+package logic;
+
 // Taken from https://stackoverflow.com/questions/521171/a-java-collection-of-value-pairs-tuples
 public class Pair<L, R> {
 
@@ -23,11 +25,11 @@ public class Pair<L, R> {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof Pair)) return false;
-        Pair pairo = (Pair) o;
-        return this.left.equals(pairo.getLeft()) &&
-                this.right.equals(pairo.getRight());
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Pair)) return false;
+        Pair pairO = (Pair) obj;
+        return this.left.equals(pairO.left) &&
+                this.right.equals(pairO.right);
     }
 
     @Override

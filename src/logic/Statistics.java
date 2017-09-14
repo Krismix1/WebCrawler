@@ -1,3 +1,5 @@
+package logic;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -6,14 +8,12 @@ import java.util.Map;
  */
 public class Statistics {
 
-    //This class should throw some null pointer exceptions
     private String characterName;
-    private Map<String, Integer> linesPerEpisodes;
+    private Map<String, Integer> linesPerEpisodes = new HashMap<>();
     private int totalLines = 0;
 
     public Statistics(String characterName) {
         this.characterName = characterName;
-        linesPerEpisodes = new HashMap<>();
     }
 
     public String getCharacterName() {
