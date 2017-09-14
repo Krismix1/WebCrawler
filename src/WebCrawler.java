@@ -1,8 +1,11 @@
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.*;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by Chris on 03-Sep-17.
@@ -88,6 +91,26 @@ public class WebCrawler {
             episodesURLS.forEach(url -> saveEpisodeFromURL(url.attr("href"), path));
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static List<String> getCharacterNames() {
+        try {
+            List<String> characterNames = new LinkedList<>();
+            Document doc = Jsoup.connect("https://en.wikipedia.org/wiki/List_of_Game_of_Thrones_characters").get();
+            for (Element table : doc.select("table.wikitable")) { //select the first table.
+                Elements rows = table.select("tr");
+
+                for (int i = 2; i < rows.size(); i++) { //first row is the col names so skip it, second row is the number of the season
+                    Element row = rows.get(i);
+                    Elements cols = row.select("td");
+                    characterNames.add(cols.get(1).text());
+                }
+            }
+            return characterNames;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

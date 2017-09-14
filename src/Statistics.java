@@ -1,3 +1,4 @@
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -8,32 +9,28 @@ public class Statistics {
     //This class should throw some null pointer exceptions
     private String characterName;
     private Map<String, Integer> linesPerEpisodes;
-    private int totalLines = -1;
+    private int totalLines = 0;
 
     public Statistics(String characterName) {
         this.characterName = characterName;
+        linesPerEpisodes = new HashMap<>();
     }
 
     public String getCharacterName() {
         return characterName;
     }
 
-    public void registerLine(String episodeName) {
-        linesPerEpisodes.put(episodeName, linesPerEpisodes.getOrDefault(episodeName, 0) + 1);
+    public void registerLines(String episodeName, int amount) {
+        linesPerEpisodes.put(episodeName, linesPerEpisodes.getOrDefault(episodeName, 0) + amount);
+        totalLines += amount;
     }
 
     public int getTotalLines() {
-        if (totalLines < 0) {
-            totalLines = calculateTotalOfLines();
-        }
         return totalLines;
     }
 
-    private int calculateTotalOfLines() {
-        int total = 0;
-        for (String episode : linesPerEpisodes.keySet()) {
-            total += linesPerEpisodes.get(episode);
-        }
-        return total;
+    @Override
+    public String toString() {
+        return linesPerEpisodes.toString();
     }
 }

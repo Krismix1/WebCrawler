@@ -26,8 +26,13 @@ public class TextSearcher {
         return null;
     }
 
-    public List<Pair<String, Integer>> searchForWordsInAllEpisodes(String words) {
-        File[] episodes = findAllFilesAtPath(WebCrawler.APPLICATION_PATH + File.separator + "Season1");
+    /**
+     * Finds how many times the words appeared in each episode
+     * @param words words to search for
+     * @return list which holds pairs of the episode name and the number of occurrences
+     */
+    public List<Pair<String, Integer>> searchForWordsInSeason(String words, String season) {
+        File[] episodes = findAllFilesAtPath(WebCrawler.APPLICATION_PATH + File.separator + season);
 
         List<Pair<String, Integer>> occurrences = new LinkedList<>();
         for (File file : episodes) {
@@ -53,7 +58,7 @@ public class TextSearcher {
             }
             int totalOccurrences = 0;
             while (it.hasNext()) {
-                totalOccurrences += countWordsInString(words, it.next().toLowerCase());
+                totalOccurrences += countWordsInString(words.toLowerCase(), it.next().toLowerCase());
             }
             return totalOccurrences;
         } catch (FileNotFoundException e) {
