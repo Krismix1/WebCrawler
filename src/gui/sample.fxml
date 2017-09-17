@@ -48,6 +48,7 @@
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                            </columnResizePolicy>
                         </TableView>
+                        <CheckBox fx:id="capitalizationCheckBox" layoutX="146.0" layoutY="155.0" mnemonicParsing="false" text="Match capitalization" />
                      </children>
                   </AnchorPane>
                </content></Tab>

@@ -3,10 +3,7 @@ package gui;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import logic.*;
 
@@ -30,13 +27,15 @@ public class Controller {
     private TextField searchForTextField;
     @FXML
     private TableView<Pair<String, Integer>> occurrencesTable;
+    @FXML
+    private CheckBox capitalizationCheckBox;
 
     @FXML
     private void searchText() {
         String textToSearch = searchForTextField.getText();
         TextSearcher textSearcher = new TextSearcher();
         // TODO: 14-Sep-17 Put a choice box for season
-        List<Pair<String, Integer>> occurrences = textSearcher.searchForWordsInSeason(textToSearch, "Season1");
+        List<Pair<String, Integer>> occurrences = textSearcher.searchForWordsInSeason(textToSearch, "Season1", capitalizationCheckBox.isSelected());
         occurrencesTable.setItems(FXCollections.observableList(occurrences));
     }
 
@@ -48,15 +47,17 @@ public class Controller {
     @FXML
     private void gatherStatistics() {
         String character = characterNamesChoice.getValue();
+        LinesCounter linesCounter = new LinesCounter();
         if (character.equalsIgnoreCase("All")) {
-            LinesCounter linesCounter = new LinesCounter();
             System.out.println("Debug: Calculating stats");
             Map<String, Statistics> stats = linesCounter.countLinesForSeason("Season1");
 
             System.out.println("Debug: Done calculating stats");
             statisticsTableView.setItems(FXCollections.observableList(stats.values().stream().collect(Collectors.toList())));
         } else {
-            throw new UnsupportedOperationException("Unable to search for 1 character only");
+//            throw new UnsupportedOperationException("Unable to search for 1 character only");
+            Statistics results = linesCounter.countLinesForSeason(character, "Season1");
+            statisticsTableView.setItems(FXCollections.observableArrayList(results));
         }
     }
 

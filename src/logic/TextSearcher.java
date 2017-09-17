@@ -35,16 +35,18 @@ public class TextSearcher {
     /**
      * Finds how many times the words appeared in each episode
      * @param words words to search for
+     * @param capitalization flag that determines if the capitalization should match
+     *                       true: will look for exact writing, false: ignores capitalization
      * @return list which holds pairs of the episode name and the number of occurrences
      */
-    public List<Pair<String, Integer>> searchForWordsInSeason(String words, String season) {
+    public List<Pair<String, Integer>> searchForWordsInSeason(String words, String season, boolean capitalization) {
         File[] episodes = findAllFilesAtPath(WebCrawler.APPLICATION_PATH + File.separator + season);
 
         List<Pair<String, Integer>> occurrences = new LinkedList<>();
         for (File file : episodes) {
             if (file.getName().contains(".txt")) {
                 String fileName = file.getName();
-                occurrences.add(new Pair<>(fileName.replace(".txt", ""), searchForWordsInEpisode(words.toLowerCase(), fileName, season)));
+                occurrences.add(new Pair<>(fileName.replace(".txt", ""), searchForWordsInEpisode(words, fileName, season, capitalization)));
             }
         }
         return occurrences;
@@ -55,9 +57,11 @@ public class TextSearcher {
      * @param words the sequence of words that are searched
      * @param episodeTitle the title of the episode
      * @param season the season number
+     * @param capitalization flag that determines if the capitalization should match
+     *                       true: will look for exact writing, false: ignores capitalization
      * @return the number of occurrences of the words
      */
-    public int searchForWordsInEpisode(String words, String episodeTitle, String season) {
+    public int searchForWordsInEpisode(String words, String episodeTitle, String season, boolean capitalization) {
         try {
             File file = new File(WebCrawler.APPLICATION_PATH + File.separator + season + File.separator + episodeTitle);
             BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -69,8 +73,11 @@ public class TextSearcher {
                 it.next();
             }
             int totalOccurrences = 0;
+            words = capitalization ? words : words.toLowerCase();
             while (it.hasNext()) {
-                totalOccurrences += countWordsInString(words.toLowerCase(), it.next().toLowerCase());
+                String token = it.next();
+                token = capitalization ? token : token.toLowerCase();
+                totalOccurrences += countWordsInString(words, token);
             }
             return totalOccurrences;
         } catch (FileNotFoundException e) {
